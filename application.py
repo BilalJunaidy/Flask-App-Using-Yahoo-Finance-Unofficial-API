@@ -32,6 +32,7 @@ def SelectStatements(symbol):
         print("hold")
         data0 = request.form.get('option0')
         print(data0)
+        
 
         print("hold")
         data1 = request.form.get('option1')
