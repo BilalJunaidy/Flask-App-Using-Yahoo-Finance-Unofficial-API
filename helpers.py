@@ -21,6 +21,7 @@ def lookup(symbol):
     data = json.loads(response.text)
     statement = "IncomeStatement"
     
+    
 
     if statement == "IncomeStatement":
         data_update = data["incomeStatementHistory"]["incomeStatementHistory"][0]
