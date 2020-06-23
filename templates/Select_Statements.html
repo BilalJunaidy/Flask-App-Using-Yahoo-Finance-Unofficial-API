@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+	{% block heading %}
+		<title> Select Statement </title>
+	{% endblock %}
+	
+	{% block body %}
+	<p>Select the year end(s) whose Income Statement you would like to download</p>
+
+	<form action={{url_for('SelectStatements', symbol=symbol)}} method="POST">
+	{% for i in range(size) %}
+	<input type="Checkbox" name="option{{i}}" value = {{list[i]}}> {{list[i]}}>
+	<br>
+	<input type="Checkbox" name="year(s)_selected" value = {{list[i]}}> {{list[i]}}>
+	<br>
+	{% endfor %}
+	<br>
+	<input type="submit" class="btn=btn-primary" value="Submit year end(s)">
+	</form>
+	
+
+		
+			
+	
+	{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+	{% block heading %}
+		<title> Select Entity </title>
+	{% endblock %}
+	
+	{% block body %}
+	
+	<p> Please enter the ticker of the entity whose financial statement you would like to download </p>		
+	
+	<form action={{url_for('index')}} method="POST">
+	<input type="text" required="required" name="symbol" placeholder="Enter ticker">
+	<br>
+	<input type="submit" class="btn=btn-primary" value="Select ticker">
+	</form>
+
+	{% endblock %}
+	

@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+	{% block heading %}
+		<title> Income Statement </title>
+	{% endblock %}
+	
+	{% block body %}
+	
+	<p> Select the year end(s) whose Income Statement you would like to download </p>
+		{% if list %}
+		
+	<form action={{url_for('IncomeStatement')}} method="POST">
+	<select name="endDates" multiple>
+	{% for i in range(len(list)) %}
+		<option value="{{list[i]}}">{{list[i]}}</option>
+
+	{% endfor %}
+		{% endif %}
+			
+	
+	{% endblock %}
