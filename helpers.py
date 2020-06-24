@@ -10,7 +10,7 @@ def lookup(symbol):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
+    'x-rapidapi-key': "SECRET_API_KEY"
     }
 
     response = requests.get(url, headers=headers, params=querystring)
@@ -27,7 +27,7 @@ def lookup_year_end(symbol):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
+    'x-rapidapi-key': "SECRET_API_KEY"
     }
 
     response = requests.get(url, headers=headers, params=querystring)    
@@ -48,7 +48,7 @@ def IncomeStatement(symbol, IS_years_selected):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
+    'x-rapidapi-key': "SECRET_API_KEY"
     }
     
     response = requests.get(url, headers=headers, params=querystring)
@@ -95,7 +95,7 @@ def BalanceSheet(symbol, BS_years_selected):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
+    'x-rapidapi-key': "SECRET_API_KEY"
     }
     
     response = requests.get(url, headers=headers, params=querystring)
