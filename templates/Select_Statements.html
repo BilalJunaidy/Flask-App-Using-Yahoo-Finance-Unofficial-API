@@ -6,13 +6,22 @@
 
 	
 	{% block body %}
-	<p>Select the year end(s) whose Income Statement you would like to download</p>
 
+	<p>Select the year end(s) whose Income Statement you would like to download</p>
+	<br>
 	<form action={{url_for('SelectStatements', symbol=symbol)}} method="POST">
 	{% for i in range(size) %}
-	<input type="Checkbox" name="option{{i}}" value = {{list[i]}}> {{list[i]}}>
+	<input type="Checkbox" name="IS_year(s)_selected" value = {{list[i]}}> {{list[i]}}>
 	<br>
-	<input type="Checkbox" name="year(s)_selected" value = {{list[i]}}> {{list[i]}}>
+	{% endfor %}
+
+	<br>
+	<br>
+
+	<p> the year end(s) whose Balance Sheet you would like to download</p>
+	<br>
+	{% for i in range(size) %}
+	<input type="Checkbox" name="BS_year(s)_selected" value = {{list[i]}}> {{list[i]}}>
 	<br>
 	{% endfor %}
 	<br>

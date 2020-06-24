@@ -17,41 +17,94 @@ def lookup(symbol):
     if len(response.text) == 0:
         print("error")
         return None
-    
-    data = json.loads(response.text)
-    statement = "IncomeStatement"
-    
-    
-
-    if statement == "IncomeStatement":
-        data_update = data["incomeStatementHistory"]["incomeStatementHistory"][0]
-        data_update.pop('maxAge')
-        data_update.pop('ebit')
-        data_update["endDate"]["longFmt"] = data_update["endDate"]["fmt"]
-        
-        data_list = list(data["incomeStatementHistory"]["incomeStatementHistory"][0])
-
-        reformat_list = [7,15, 17, 6, 5, 0, 8, 10, 9, 14, 11, 12, 13, 1, 20, 19, 4, 3, 21]
-        FSA_list = []
-        for i in reformat_list:
-            FSA_list.append(data_list[i])
-        print(FSA_list)
-
-       ##The following can be removed from the flask version. 
-##        for i in range(len(FSA_list)):
-##            print(i, end=" ")
-##            print(FSA_list[i], end = "  " )
-##            print("$ ", end="")
-##            try:
-##                print(data_update[f"{FSA_list[i]}"]["longFmt"])
-##            except KeyError:
-##                print("0")
+    else:
         return 1
+    
+def lookup_year_end(symbol):
+    url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials"
 
-            
-            
-    if statement == "BalanceSheet":
-        data_update = data["balanceSheetHistory"]["balanceSheetStatements"][0]
+    querystring = {"symbol":f"{symbol}"}
+
+    headers = {
+    'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
+    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)    
+    data = json.loads(response.text)
+    list_of_dicts = data["incomeStatementHistory"]["incomeStatementHistory"]
+    list = []
+    number_of_years = len(list_of_dicts)
+
+    for i in range(number_of_years):
+        list.append(list_of_dicts[i]["endDate"]["fmt"])
+
+    print(list)
+    print(type(list))
+    return list
+    
+def IncomeStatement(symbol, IS_years_selected):
+    url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials"
+
+    querystring = {"symbol":f"{symbol}"}
+
+    headers = {
+    'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
+    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
+    }
+    
+    response = requests.get(url, headers=headers, params=querystring)
+    data = json.loads(response.text)
+    data_orig = data["incomeStatementHistory"]["incomeStatementHistory"]
+
+    for i in range(4):
+        data_orig[i]["endDate"]["longFmt"] = data_orig[i]["endDate"]["fmt"]
+        print(data_orig[i]["endDate"]["longFmt"])
+    
+    data_list = data_orig[0]
+    data_list.pop('maxAge')
+    data_list.pop('ebit')
+    data_list = list(data_orig[0])
+    
+
+    reformat_list = [7,15, 17, 6, 5, 0, 8, 10, 9, 14, 11, 12, 13, 1, 20, 19, 4, 3, 21]
+    FSA_list = []
+    for i in reformat_list:
+        FSA_list.append(data_list[i])
+    print(FSA_list)
+
+    IS_record_row = []
+
+    for i in range(len(FSA_list)):
+        record = []
+        record.append(f"{FSA_list[i]}")
+        for n in IS_years_selected:
+            try:
+                record.append(data_orig[n][f"{FSA_list[i]}"]['longFmt'])
+            except KeyError:
+                record.append(0)
+
+        IS_record_row.append(record)
+
+    return IS_record_row
+    
+
+def BalanceSheet(symbol, BS_years_selected):
+    url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials"
+
+    querystring = {"symbol":f"{symbol}"}
+
+    headers = {
+    'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
+    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
+    }
+    
+    response = requests.get(url, headers=headers, params=querystring)
+    data = json.loads(response.text)
+    
+    data_orig = data["balanceSheetHistory"]["balanceSheetStatements"]
+    for i in range(4):
+        data_update = data_orig[i]
         data_update.pop('maxAge')
         data_update["endDate"]["longFmt"] = data_update["endDate"]["fmt"]
 
@@ -82,30 +135,40 @@ def lookup(symbol):
         TotalEquityAndLiabilities = TotalLiab + TotalEquity
         data_update["TotalEquityAndLiabilities"] = {}
         data_update["TotalEquityAndLiabilities"]["longFmt"] = str(TotalEquityAndLiabilities)        
-        
-        data_list = list(data_update)
-        
-        reformat_list = [5, 10,16, 18, 14, 0, 13, 9, 4, 17, 3, 11, 19, 1, 6, 8, 7, 2, 20]
-        FSA_list = []
-        for i in reformat_list:
-            FSA_list.append(data_list[i])
-        print(FSA_list)
+    
+    data_list = list(data_orig[0])
+    
+    reformat_list = [5, 10,16, 18, 14, 0, 13, 9, 4, 17, 3, 11, 19, 1, 6, 8, 7, 2, 20]
+    FSA_list = []
+    for i in reformat_list:
+        FSA_list.append(data_list[i])
+    print(FSA_list)
 
-        
-        print(data_update)
-        print(data_list)
-
-
-        ##The following can be removed from the flask version.
-
-        for i in range(len(data_list)):
-            print(i, end=" ")
-            print(f"{data_list[i]}", end = " ")
-            print("$ ", end="")
+    #Creating record of balance sheet that is to be returned to the application.py function
+    BS_record_row = []
+    for i in range(len(FSA_list)):
+        record = []
+        record.append(f"{FSA_list[i]}")
+        for n in BS_years_selected:
             try:
-                print(data_update[f"{data_list[i]}"]["longFmt"])
+                record.append(data_orig[n][f"{FSA_list[i]}"]['longFmt'])
             except KeyError:
-                print("1110")
+                record.append(0)
+        BS_record_row.append(record)
+
+    return BS_record_row
+
+
+    ##The following can be removed from the flask version.
+
+    for i in range(len(data_list)):
+        print(i, end=" ")
+        print(f"{data_list[i]}", end = " ")
+        print("$ ", end="")
+        try:
+            print(data_update[f"{data_list[i]}"]["longFmt"])
+        except KeyError:
+            print("1110")
 
         ## BalanceSheet FSA List format
                 ##5th - 0th 
@@ -131,13 +194,13 @@ def lookup(symbol):
 
 
     
-        
-    if statement == "CashflowStatement":
-        data = data["cashflowStatementHistory"]["cashflowStatements"][0]
-        print(data)
-        data_update = list(data)
-        for i in range(len(data_update)):
-            print(data_update[i])
+##        
+##    if statement == "CashflowStatement":
+##        data = data["cashflowStatementHistory"]["cashflowStatements"][0]
+##        print(data)
+##        data_update = list(data)
+##        for i in range(len(data_update)):
+##            print(data_update[i])
 
 
 def convert_str_to_float(str):
@@ -177,28 +240,7 @@ def convert_str_to_float(str):
 ##
 ##def CashFlow():
 ##    pass
-def lookup_year_end(symbol):
-    url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials"
 
-    querystring = {"symbol":f"{symbol}"}
-
-    headers = {
-    'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
-    }
-
-    response = requests.get(url, headers=headers, params=querystring)    
-    data = json.loads(response.text)
-    list_of_dicts = data["incomeStatementHistory"]["incomeStatementHistory"]
-    list = []
-    number_of_years = len(list_of_dicts)
-
-    for i in range(number_of_years):
-        list.append(list_of_dicts[i]["endDate"]["fmt"])
-
-    print(list)
-    print(type(list))
-    return list
         
 
     

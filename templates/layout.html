@@ -9,12 +9,14 @@
 		{% with messages = get_flashed_messages() %}
 			{% if messages %}
 			{% for message in messages %}
-			<p> {{message}} </p>
+			<h3> {{message}} </h3>
 			{% endfor %}
 			{% endif %}
 			{% endwith %}
 
 		
+		<p>Developed by <a href = "https://www.linkedin.com/in/bilaljunaidy/">Bilal Junaidy, CPA</a></p>
+
 		{% block body %} {% endblock %}
 	</body>
 </html>

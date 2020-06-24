@@ -1,5 +1,6 @@
-from flask import Flask, request, redirect, render_template, url_for, flash
-from helpers import lookup, lookup_year_end
+from flask import Flask, request, redirect, render_template, url_for, flash, send_file, abort
+from helpers import lookup, lookup_year_end, IncomeStatement, BalanceSheet
+import csv
 
 app = Flask(__name__)
 
@@ -16,49 +17,62 @@ def index():
             return redirect(url_for('index'))
         else:
             return redirect(url_for('SelectStatements', symbol=symbol))
-##    if request.method == "GET":
     else:
         return render_template("User_Selection.html")
 
 @app.route('/SelectStatements/<symbol>', methods = ["GET", "POST"])
 def SelectStatements(symbol):
+    year_end_list = lookup_year_end(symbol)
+    
     if request.method == "POST":
-        data_list = request.form.getlist('year(s)_selected')
-        print(data_list)
-        print("hold")
-        data = request.form
-        print(data)
-        print(type(data))
-        print("hold")
-        data0 = request.form.get('option0')
-        print(data0)
+        #Managing users who have submitted an empty form
+        IS_list = request.form.getlist('IS_year(s)_selected')
+        BS_list = request.form.getlist('BS_year(s)_selected')
+        if len(IS_list) == 0 and len(BS_list) == 0:
+            flash_message = """You need to select at least one year end date to download to use this FS tool!"""
+            flash(flash_message)
+            return render_template("Select_Statements.html", list = year_end_list, size = len(year_end_list), symbol=f"{symbol}")
         
+        #Generating IS_years_selected list so that it can be used in the generation of the user's requested years
+        IS_years_selected = []
+        for i in range(len(year_end_list)):
+            if year_end_list[i] in IS_list:
+                IS_years_selected.append(i)
+        print(IS_years_selected)
+        if len(IS_list) != 0:
+            IS_record_row = IncomeStatement(symbol,IS_years_selected)
 
-        print("hold")
-        data1 = request.form.get('option1')
-        print(data1)
-
-        print("hold")
-        data2 = request.form.get('option2')
-        print(data2)
-
-        print("hold")
-        data3 = request.form.get('option3')
-        print(data3)
+            with open("Income_Statement.csv", "w", newline="") as csv_file:
+                IS_writer = csv.writer(csv_file)
+                IS_writer.writerow([f'Please find the Income Statement for {symbol} for your selected fiscal year ends'])
+                for row in IS_record_row:
+                    IS_writer.writerow(row)
+            try:
+                return send_file("Income_Statement.csv",  as_attachment=True)
+            except FileNotFoundError:
+                abort(404)
         
-##        data = request.form.get("yearends")
-##        print(type(data))
-##        print(data)
-####        dict_data = data.values()
-####        for v in dict_data:
-####            print(v)
-####        print("")
-####        print(dict_data)
-##        print(len(data))
-        
-        return render_template("todelete.html")
+        #Generating BS_years_selected list so that it can be used in the generation of the user's requested years        
+        BS_years_selected = []
+        for i in range(len(year_end_list)):
+            if year_end_list[i] in BS_list:
+                BS_years_selected.append(i)
+        print(BS_years_selected)
+
+        if len(BS_list) != 0:
+            BS_record_row = BalanceSheet(symbol,BS_years_selected)
+
+            with open("Balance_Sheet.csv", "w", newline="") as csv_file:
+                BS_writer = csv.writer(csv_file)
+                BS_writer.writerow([f'Please find the Balance Sheet for {symbol} for your selected fiscal year ends'])
+                for row in BS_record_row:
+                    BS_writer.writerow(row)
+            try:
+                return send_file("Balance_Sheet.csv",  as_attachment=True)
+            except FileNotFoundError:
+                abort(404)
+            
     else:
-        year_end_list = lookup_year_end(symbol)
         return render_template("Select_Statements.html", list = year_end_list, size = len(year_end_list), symbol=f"{symbol}")
     
         
