@@ -11,7 +11,7 @@
 	<br>
 	<form action={{url_for('SelectStatements', symbol=symbol)}} method="POST">
 	{% for i in range(size) %}
-	<input type="Checkbox" name="IS_year(s)_selected" value = {{list[i]}}> {{list[i]}}>
+	<input type="Checkbox" name="IS_year(s)_selected" value = {{list[i]}}> {{list[i]}}
 	<br>
 	{% endfor %}
 
@@ -21,7 +21,7 @@
 	<p> the year end(s) whose Balance Sheet you would like to download</p>
 	<br>
 	{% for i in range(size) %}
-	<input type="Checkbox" name="BS_year(s)_selected" value = {{list[i]}}> {{list[i]}}>
+	<input type="Checkbox" name="BS_year(s)_selected" value = {{list[i]}}> {{list[i]}}
 	<br>
 	{% endfor %}
 	<br>

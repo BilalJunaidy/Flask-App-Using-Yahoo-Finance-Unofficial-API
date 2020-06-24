@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+	{% block heading %}
+		<title> Download results </title>
+	{% endblock %}
+
+	
+	{% block body %}
+	<p> Click here to download the Income Statement </p>
+	<br>
+	<form action={{url_for('download_results')}} method="POST">
+	<input type="Checkbox" name="Income Statement" value = "Income Statement">Income Statement
+	<input type="submit" class="btn=btn-primary" value="Download">
+	</form>
+	
+	<br>
+	<p> Click here to download the Balance Sheet </p>
+	<br>
+	<form action={{url_for('download_results')}} method="POST">
+	<input type="Checkbox" name="Balance Sheet" value = "Balance Sheet">Balance Sheet
+	<input type="submit" class="btn=btn-primary" value="Download">
+	</form>
+		
+			
+	
+	{% endblock %}

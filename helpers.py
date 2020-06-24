@@ -10,7 +10,7 @@ def lookup(symbol):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
 
     response = requests.get(url, headers=headers, params=querystring)
@@ -27,7 +27,7 @@ def lookup_year_end(symbol):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
 
     response = requests.get(url, headers=headers, params=querystring)    
@@ -39,8 +39,6 @@ def lookup_year_end(symbol):
     for i in range(number_of_years):
         list.append(list_of_dicts[i]["endDate"]["fmt"])
 
-    print(list)
-    print(type(list))
     return list
     
 def IncomeStatement(symbol, IS_years_selected):
@@ -50,7 +48,7 @@ def IncomeStatement(symbol, IS_years_selected):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
     
     response = requests.get(url, headers=headers, params=querystring)
@@ -71,6 +69,7 @@ def IncomeStatement(symbol, IS_years_selected):
     FSA_list = []
     for i in reformat_list:
         FSA_list.append(data_list[i])
+    print("Income Statement FSA_list: ")
     print(FSA_list)
 
     IS_record_row = []
@@ -96,7 +95,7 @@ def BalanceSheet(symbol, BS_years_selected):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "481e4dbd2emsh9e7780b1882918ap101e23jsneab53031dd60"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
     
     response = requests.get(url, headers=headers, params=querystring)
@@ -113,9 +112,11 @@ def BalanceSheet(symbol, BS_years_selected):
         TotalCash = convert_str_to_float(data_update["cash"]["longFmt"])
         TotalAR = convert_str_to_float(data_update["netReceivables"]["longFmt"])
         OtherCA = TotalCA - TotalCash - TotalAR
+        print("OtherCA: ")
         print(OtherCA)
         data_update["OtherCurrentAssets"] = {}
         data_update["OtherCurrentAssets"]["LongFmt"] = str(OtherCA)
+        print("OtherCA inputted: ")
         print(data_update["OtherCurrentAssets"]["LongFmt"])
 
         # Updating the value of Other Current Liabilities 
@@ -137,11 +138,24 @@ def BalanceSheet(symbol, BS_years_selected):
         data_update["TotalEquityAndLiabilities"]["longFmt"] = str(TotalEquityAndLiabilities)        
     
     data_list = list(data_orig[0])
+    print("Length of data list: ")
+    print(len(data_list))
+    print("printing the original balance sheet data list")
+    print(data_list)
     
-    reformat_list = [5, 10,16, 18, 14, 0, 13, 9, 4, 17, 3, 11, 19, 1, 6, 8, 7, 2, 20]
+##    reformat_list = [5, 10,16, 18, 14, 0, 13, 9, 4, 17, 3, 11, 19, 1, 6, 8, 7, 2, 20]
+##    reformat_list = [4, 11,16, 18, 14, 0, 13, 9, 4, 17, 3, 11, 19, 1, 6, 8, 7, 2, 20]
+##    reformat_list = [6,14,23,27,25,22,8,19,18,0,11,20,13,5,26,4,10,15,28,2,7,12,9,3,29]
+
+    reformat_list = [4,11,23,27,25,22,8,19,18,0,11,20,13,5,26,4,10,15,28,2,7,12,9,3,29]
+    print("Length of reformat list: ")
+    print(len(reformat_list))
     FSA_list = []
-    for i in reformat_list:
+    for i in range(len(reformat_list)):
         FSA_list.append(data_list[i])
+##        except IndexError:
+##            FSA_list.append()
+    print("Balance Sheet FSA_list: ")
     print(FSA_list)
 
     #Creating record of balance sheet that is to be returned to the application.py function
@@ -161,14 +175,14 @@ def BalanceSheet(symbol, BS_years_selected):
 
     ##The following can be removed from the flask version.
 
-    for i in range(len(data_list)):
-        print(i, end=" ")
-        print(f"{data_list[i]}", end = " ")
-        print("$ ", end="")
-        try:
-            print(data_update[f"{data_list[i]}"]["longFmt"])
-        except KeyError:
-            print("1110")
+##    for i in range(len(data_list)):
+##        print(i, end=" ")
+##        print(f"{data_list[i]}", end = " ")
+##        print("$ ", end="")
+##        try:
+##            print(data_update[f"{data_list[i]}"]["longFmt"])
+##        except KeyError:
+##            print("1110")
 
         ## BalanceSheet FSA List format
                 ##5th - 0th 
