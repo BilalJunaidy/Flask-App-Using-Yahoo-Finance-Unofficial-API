@@ -10,7 +10,7 @@ def lookup(symbol):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "SECRET_API_KEY"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
 
     response = requests.get(url, headers=headers, params=querystring)
@@ -27,7 +27,7 @@ def lookup_year_end(symbol):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "SECRET_API_KEY"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
 
     response = requests.get(url, headers=headers, params=querystring)    
@@ -48,7 +48,7 @@ def IncomeStatement(symbol, IS_years_selected):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "SECRET_API_KEY"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
     
     response = requests.get(url, headers=headers, params=querystring)
@@ -95,7 +95,7 @@ def BalanceSheet(symbol, BS_years_selected):
 
     headers = {
     'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    'x-rapidapi-key': "SECRET_API_KEY"
+    'x-rapidapi-key': "67a4c7d659msh81246b43815e2fcp1664e2jsnaba909eaa91d"
     }
     
     response = requests.get(url, headers=headers, params=querystring)
@@ -110,20 +110,40 @@ def BalanceSheet(symbol, BS_years_selected):
         # Adding OtherCurrentAssets into the list of balance sheet FSA
         TotalCA = convert_str_to_float(data_update["totalCurrentAssets"]["longFmt"])
         TotalCash = convert_str_to_float(data_update["cash"]["longFmt"])
-        TotalAR = convert_str_to_float(data_update["netReceivables"]["longFmt"])
-        OtherCA = TotalCA - TotalCash - TotalAR
+        try:
+            TotalInventory = convert_str_to_float(data_update["inventory"]["longFmt"])
+        except KeyError:
+            TotalInventory = 0
+        try:
+            TotalAR = convert_str_to_float(data_update["netReceivables"]["longFmt"])
+        except KeyError:
+            TotalAR = 0
+        OtherCA = TotalCA - TotalCash - TotalAR - TotalInventory
         print("OtherCA: ")
         print(OtherCA)
-        data_update["OtherCurrentAssets"] = {}
-        data_update["OtherCurrentAssets"]["LongFmt"] = str(OtherCA)
+        #data_update["otherCurrentAssets"]["LongFmt"] = OtherCA
         print("OtherCA inputted: ")
-        print(data_update["OtherCurrentAssets"]["LongFmt"])
+        #print(data_update["otherCurrentAssets"]["LongFmt"])
 
         # Updating the value of Other Current Liabilities 
         AP = convert_str_to_float(data_update["accountsPayable"]["longFmt"])
         TotalCL = convert_str_to_float(data_update["totalCurrentLiabilities"]["longFmt"])
-        otherCL = TotalCL - AP
+        try:
+            TotalShortLTD = convert_str_to_float(data_update["shortLongTermDebt"]["longFmt"])
+        except KeyError:
+            TotalShortLTD = 0
+            
+        otherCL = TotalCL - AP - TotalShortLTD
+
+        print("OtherCL value: ")
+        print(otherCL)
+
+        
+        print("Other CL value before insertion: ")
+        print(data_update["otherCurrentLiab"]["longFmt"])        
         data_update["otherCurrentLiab"]["longFmt"] = str(otherCL)
+        print("Other CL value after insertion: ")
+        print(data_update["otherCurrentLiab"]["longFmt"])
 
         # Adding Long term Liabilities into the list of balance sheet FSA
         TotalLiab = convert_str_to_float(data_update["totalLiab"]["longFmt"])
@@ -142,16 +162,12 @@ def BalanceSheet(symbol, BS_years_selected):
     print(len(data_list))
     print("printing the original balance sheet data list")
     print(data_list)
-    
-##    reformat_list = [5, 10,16, 18, 14, 0, 13, 9, 4, 17, 3, 11, 19, 1, 6, 8, 7, 2, 20]
-##    reformat_list = [4, 11,16, 18, 14, 0, 13, 9, 4, 17, 3, 11, 19, 1, 6, 8, 7, 2, 20]
-##    reformat_list = [6,14,23,27,25,22,8,19,18,0,11,20,13,5,26,4,10,15,28,2,7,12,9,3,29]
 
-    reformat_list = [4,11,23,27,25,22,8,19,18,0,11,20,13,5,26,4,10,15,28,2,7,12,9,3,29]
+    reformat_list = [4, 11,20, 22, 6, 19, 16, 15, 10, 17, 3, 23, 2, 13, 12, 21, 8,0, 5, 9, 7, 1, 25]
     print("Length of reformat list: ")
     print(len(reformat_list))
     FSA_list = []
-    for i in range(len(reformat_list)):
+    for i in reformat_list:
         FSA_list.append(data_list[i])
 ##        except IndexError:
 ##            FSA_list.append()
@@ -173,89 +189,8 @@ def BalanceSheet(symbol, BS_years_selected):
     return BS_record_row
 
 
-    ##The following can be removed from the flask version.
-
-##    for i in range(len(data_list)):
-##        print(i, end=" ")
-##        print(f"{data_list[i]}", end = " ")
-##        print("$ ", end="")
-##        try:
-##            print(data_update[f"{data_list[i]}"]["longFmt"])
-##        except KeyError:
-##            print("1110")
-
-        ## BalanceSheet FSA List format
-                ##5th - 0th 
-                ##10th - 1st 
-                ##16th - 2nd
-                ##18th - 3rd 
-                ##14th - 4th - TOtal current assets 
-                ##0th - 5th  
-                ##13th - 6th  
-                ##9th - 7th
-                ##4th - 8th 
-                ##17th - 9th 
-                ##3rd - 10th 
-                ##11th - 11th 
-                ##19th - 12th 
-                ##1st - 13th 
-                ##6th - 14th 
-                ##8th - 15th 
-                ##7th - 16th 
-                ##2nd - 17th 
-                ##20th - 18th 
-
-
-
-    
-##        
-##    if statement == "CashflowStatement":
-##        data = data["cashflowStatementHistory"]["cashflowStatements"][0]
-##        print(data)
-##        data_update = list(data)
-##        for i in range(len(data_update)):
-##            print(data_update[i])
-
 
 def convert_str_to_float(str):
     n = str.count(",")
     return float(str.replace(",", "", n))
 
-##def IncomeStatement():
-##    pass
-##
-
-## Create a new list, and copy element from the old list into the new one. This is for Income Statement. 
-        ## 7th - 0th
-        ## 15th - 1st
-        ## 17th - 2nd
-        ## 6th - 3rd
-        ## 5th - 4th
-        ## 0th - 5th
-        ## 8th - 6th
-        ## 10th - 7th
-        ## 9th - 8th
-        ## 14th - 9th 
-        ## 11th - 10th
-        ## 12th - 11th 
-        ## 13th - 12th
-        ## 1st - 15th
-        ## 20st - 16th 
-        ## 19th - 17th
-        ## 4th - 18th
-        ## 3rd - 19th
-        ## 21nd - 20th 
-        
-##
-##def BalanceSheet():
-##    pass
-##
-##
-##
-##def CashFlow():
-##    pass
-
-        
-
-    
-    
